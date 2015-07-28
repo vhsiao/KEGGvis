@@ -1,0 +1,12 @@
+.DS_Store
+.RData
+.Rapp.history
+.Rhistory
+cached.pathways/example_data
+cached.pathways/images
+cached.pathways/dot
+cached.pathways/name_map
+cached.pathways/xml
+images
+example_data
+

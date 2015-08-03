@@ -146,14 +146,15 @@ label.data <- function(pathway.id, organism=organism, analysis, label.cols, with
   return(node.labels)  
 }
 
-get.label.data <- function(analysis, label.cols, with.id=FALSE) {
+get.label.data <- function(analysis, label.cols, with.id=FALSE, alpha = 0.05) {
   tryCatch({
     first = TRUE
     for (dc in label.cols) {
+      dat = unlist(analysis[dc])
       if (dc=="p.value") {
-        dc.data = paste0(dc, ": ", sprintf("%0.2e", unlist(analysis[dc])))
+        dc.data = paste0(dc, ": ", sprintf("%0.2e", dat))
       } else {
-        dc.data = paste0(dc, ": ", sprintf("%0.2f", unlist(analysis[dc])))
+        dc.data = paste0(dc, ": ", sprintf("%0.2f", dat))
       }
       if(first) {
         l.data <- dc.data

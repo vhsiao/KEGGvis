@@ -146,13 +146,23 @@ label.data <- function(pathway.id, organism=organism, analysis, label.cols, with
   return(node.labels)  
 }
 
-get.label.data <- function(analysis, label.cols, with.id=FALSE, alpha = 0.05) {
+get.label.data <- function(analysis, label.cols, with.id=FALSE, alpha = 0.05, show.Holm = TRUE) {
   tryCatch({
     first = TRUE
     for (dc in label.cols) {
       dat = unlist(analysis[dc])
       if (dc=="p.value") {
-        dc.data = paste0(dc, ": ", sprintf("%0.2e", dat))
+        # Holm P
+        holm.p = p.adjust(dat, method = "holm")
+        dc.data = paste0(dc, ": ", sprintf("%0.2e (Holm: %0.2e)", dat, holm.p))
+        
+        # Find significant entries
+        sig.idx <- (dat < alpha & !is.na(dat))
+        sig.idx.hp <- (holm.p < alpha & !is.na(holm.p))
+        
+        # Add * for significant, ** if Holm adjusted p is significant
+        dc.data[sig.idx] = paste("*", dc.data[sig.idx])
+        dc.data[sig.idx.hp] = paste0("*", dc.data[sig.idx.hp])
       } else {
         dc.data = paste0(dc, ": ", sprintf("%0.2f", dat))
       }
@@ -170,6 +180,8 @@ get.label.data <- function(analysis, label.cols, with.id=FALSE, alpha = 0.05) {
   }, warning = function(w) {
     simpleWarning(paste("Could not add parameter to label", label.cols, "- default labels only."))
     l.data = list()
+  }, error = function(e) {
+    simpleError(e)
   })
   return(l.data)
 }
